@@ -9,8 +9,8 @@
 #' @return The function is called for its side effects.
 #' @export
 plot.metrics <- function(x, ...) {
-  bp <- function(x, ref, ...) {
-    boxplot(m[[x]], xlab = "sample size", ylab = x, ...)
+  bp <- function(names_x, ref, ...) {
+    boxplot(x[[names_x]], xlab = "sample size", ylab = names_x, ...)
     abline(h = ref, col = "darkblue", lty = 2)
   }
   invisible(mapply(bp, names(x), c(attr(x, "real_Rsquared"),
