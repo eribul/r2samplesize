@@ -1,0 +1,60 @@
+---
+title: "Work in Progress"
+author: "Erik Bulow"
+date: "9 februari 2016"
+output: pdf_document
+bibliography: test.bib
+csl: biomed-central.csl
+---
+
+
+# Intro
+
+Detta är ett arbetsdokument för att dokumentera mitt arbete då det pågår!
+
+# Förberedelser
+
+```{r echo=FALSE, results='hide'}
+# Vi har ännu inget paket men kan läsa in funktionerna "manuellt"
+lapply(paste0("../../R/", dir("../../R/")), source)
+```
+```{r}
+# Try it out!
+memory.limit(50000)
+options(samplemetric.log = TRUE)
+set.seed(123)
+```
+
+# 2016-02-09
+
+```{r cache=TRUE}
+# Samma för alla
+d  <- sim_data()
+ss <- subsamples(d, n.sample = c(50, 200, 500), N = 10)
+
+# Beräkna för olika methods
+mthds <- c("none", "boot", "cv")
+# mthds <- c("none", "boot", "boot632", "cv", "repeatedcv", "LOOCV", "LGOCV") 
+ms <- lapply(mthds, function(m) metrics(ss, m))
+names(ms) <- mthds
+
+# Plotta för alla
+par(mfcol = c(2, length(mthds)))
+for (i in seq_along(ms)) plot(ms[[i]], main = mthds[i])
+```
+
+## Slutsatser
+
+1. Vi ska egentligen inte jämföra resultaten mot beräknade värden för hela datasettet utan använda beräkningar med "none" som facir (dvs på de mindre datasetten). 
+2. Vi identifierar mönstret att högre RMSE betyder mer brus => mindre R2
+3. Framförallt noteras att cv överskattar resultatet och orsak till detta måste undersökar!
+
+## Testar referenser
+Enl: http://rmarkdown.rstudio.com/authoring_bibliographies_and_citations.html
+
+Testar här: [@Steyerberg2001] 
+Verkar inte funka med Endnote-filer (framgår också av länk ovan att detta är erkänt problem).
+Men funkar med många andra format, t ex .bib
+
+# Test med referenser
+

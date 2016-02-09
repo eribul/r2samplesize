@@ -1,0 +1,19 @@
+Package: r2samplesize
+Type: Package
+Title: Relation Between Sample Size and Effect Size
+Version: 0.0.9000
+Date: 2016-02-09
+Author: Erik Bulow
+Maintainer: Erik Bulow <eriklgb@gmail.com>
+Description: Simulate data sets of increasing sizes to investigate relation
+    between sample size and effect metrics (Rsquared and RMSE).
+Imports:
+  caret,
+  dplyr,
+  mvtnorm
+Suggests:
+  log4r,
+  testthat
+License: GPL-2
+LazyData: TRUE
+RoxygenNote: 5.0.1
