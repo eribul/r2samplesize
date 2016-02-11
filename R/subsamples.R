@@ -4,8 +4,8 @@
 #' @param d object of class \code{\link{sim_data}}
 #' @param n.sample subsample sizes
 #' @param N number of subsamples of each size
-#' @return list of length \code{N} with subsampled data frames
-#' for each value of \code{n.sample}
+#' @return list of length \code{N} with lists of
+#' subsampled data frames for each value of \code{n.sample}
 #' @export
 subsamples <- function(d, n.sample = seq(50, 500, 50), N = 10) {
   stopifnot(inherits(d, "sim_data"))

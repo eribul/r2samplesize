@@ -3,12 +3,19 @@
 #'
 #' @param ss object as output from \code{\link{subsamples}}
 #' @param method argument passed to \code{\link{caret_step}}
+#' @param N number of subamples of each size. This alternative
+#' can be used to reuse a subsamlpe object with larger N set by
+#' \code{\link{subsamples}} instead of generating multiple subsamples
+#' (this \code{N} can not be larger than the original \code{N})
+#' set by \code{\link{subsamples}}).
 #' @return object of class "metrics", which is a list of two data.frames,
 #' "Rsquared" and "RMSE where each has columns corresponding
 #' to sample sizes and rows corresponding to repeated samples.
 #' @export
-metrics <- function(ss, method = "none") {
-  stopifnot(inherits(ss, "subsamples"))
+metrics <- function(ss, method = "none", N = length(ss)) {
+  stopifnot(inherits(ss, "subsamples"),
+            N <= length(ss))
+  ss <- ss[seq_len(N)]
   metrics  <- function(df) caret_step(df, control_method = method)
   m <- lapply(ss, function(Ni) lapply(Ni, metrics))
   m <- lapply(m, function(Ni) t(as.data.frame(Ni)))
@@ -16,11 +23,11 @@ metrics <- function(ss, method = "none") {
   extract_metric <- function(column) {
     x <- t(as.data.frame(lapply(m, function(x) x[, column])))
     colnames(x) <- attr(ss, "n.sample")
-    rownames(x) <- seq_len(attr(ss, "N"))
+    rownames(x) <- seq_len(N)
     x
   }
   x <- list(Rsquared = extract_metric(1), RMSE = extract_metric(2))
-  structure(x,  n.sample = attr(ss, "n.sample"),  N = attr(ss, "N"),
+  structure(x,  n.sample = attr(ss, "n.sample"),  N = N,
             real_Rsquared = attr(ss, "real_Rsquared"), real_RMSE = attr(ss, "real_RMSE"),
             class = c("metrics", "list"))
 }
