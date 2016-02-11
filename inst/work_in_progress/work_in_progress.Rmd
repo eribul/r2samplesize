@@ -8,7 +8,7 @@ output:
     fig_width: 7
     number_sections: yes
     toc: yes
-bibliography: test.bib
+bibliography: article1.bib
 ---
 
 
@@ -19,8 +19,8 @@ Detta är ett arbetsdokument för att dokumentera mitt arbete då det pågår!
 # Förberedelser
 
 ```{r echo=FALSE, results='hide'}
-# Vi har ännu inget paket men kan läsa in funktionerna "manuellt"
-lapply(paste0("../../R/", dir("../../R/")), source)
+library(r2samplesize)
+knitr::opts_chunk$set(autodep = TRUE, cache = TRUE)
 ```
 ```{r}
 # Try it out!
@@ -62,5 +62,66 @@ Verkar inte funka med Endnote-filer (framgår också av länk ovan att detta är
 Men funkar med många andra format, t ex .bib. Jag testar därför att istället använda Mendeley, vilket jag är riktigt nöjd med!
 
 
-# Test med referenser
+# 2016-20-10
+
+## Diskussion med SN
+Vi drar en del lärdomar av [@Steyerberg2001]:
+
+1. Vi bör använda liknande men förenklade jämförelsemått för R2, dvs enligt tabel 1 (dock inte för Bootstrap 0.632 som har en onödigt krångig metod och även för de andra metoderna bör vi försöka använda samma mått för alla).
+2. Vi bör utöka modelleringen till att även använda splines och med en mer komplicerad modell, dvs Y ~ g(.) för ngt g. (Jmfr artikeln osm anväder logistisk regression t ex).
+ 
+
+Vi ökar N till 1000:
+
+```{r cache=TRUE}
+# Samma för alla
+ss <- subsamples(d, n.sample = c(50, 200, 500), N = 1000)
+
+# Beräkna för olika methods
+mthds <- c("none", "boot", "cv")
+ms <- lapply(mthds, function(m) metrics(ss, m))
+names(ms) <- mthds
+
+# Plotta för alla
+par(mfcol = c(2, length(mthds)))
+for (i in seq_along(ms)) plot(ms[[i]], main = mthds[i])
+```
+Vi kan nu med större säkerhet dra slutsatsen att boot tycks underskatta och cv överskatta resultatet.
+Att vi överskattar för none kan dock rimligen bero på vårt låga r2 = 0.2. Vi förväntar oss ett mer symmetriskt resultat för r2 = .5 och testar med det. Vi vill undersöka för lite fler n.samples. 
+
+När vi kör cv delar vi datamängden i 10 delar, dvs 5 observationer i varje och validering sker på dessa fem datapunkter, dvs samma antal som antalet kovariater. 
+
+Vi ändrar r2 och n.sample:
+
+```{r cache=TRUE}
+# Samma för alla
+d  <- sim_data(r2 = .5)
+ss <- subsamples(d, n.sample = c(50, 100, 200, 300), N = 1000)
+
+# Beräkna för olika methods
+mthds <- c("none", "boot", "cv")
+ms <- lapply(mthds, function(m) metrics(ss, m))
+names(ms) <- mthds
+
+# Plotta för alla
+par(mfcol = c(2, length(mthds)))
+for (i in seq_along(ms)) plot(ms[[i]], main = mthds[i])
+```
+
+Bra förklaring till Bootstrap och .632 version:
+http://stats.stackexchange.com/questions/96739/what-is-the-632-rule-in-bootstrapping
+Harrell skriver också i ett svar att 0.632+-versionen inte nödvändig om man använder deviance-based värde etc.
+
+CV är en mer traditionell metod än boot.
+Boot ger mindre varians för små stickprovsstorlekar [@Kim2009, p 1].
+
+Har satt upp en gratisinstans av R + RStudio på AWS. Gratisversion i ett år. Dock ganska begr resurser om man inte betalar. Men funkar bra. Nås via: http://ec2-54-93-99-36.eu-central-1.compute.amazonaws.com/
+
+### Fundering
+ 
+1. Hur går det att undersöka R2 om vår modell inte är linjär. Vårt R2 bygger ju på korrelation i det linjära fallet men måste bli ett annat mått med annan modell [@Breiman2001].
+
+
+<!-- Denna rubrik ska alltid ligga allra sist eftersom referenser automatiskt kommer därefter -->
+# Referenser
 
