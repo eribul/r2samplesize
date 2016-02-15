@@ -22,7 +22,7 @@ sim_data <- function(r2 = .2, n = 1e6, p = 5, adjusted.r.square = FALSE) {
   # ... With exception for covariance between outcome and predictors
   # given by r = sqrt(R2 / p)
   if (adjusted.r.square) r2 <- unadj.r2(adj.r2, n, p)
-  sig.mat[1, -1] <- sig.mat[-1, 1] <- sqrt(r2 / (p))
+  sig.mat[1, -1] <- sig.mat[-1, 1] <- sqrt(r2 / p)
 
   # Data frame with data from multinormal data with desired R2
   d <- as.data.frame(mvtnorm::rmvnorm(n, sigma = sig.mat))
