@@ -4,18 +4,18 @@
 \alias{subsamples}
 \title{Take subsamples from data.frame}
 \usage{
-subsamples(d, n.sample = seq(50, 500, 50), N = 10)
+subsamples(d, n.max = 500, N = 10)
 }
 \arguments{
 \item{d}{object of class \code{\link{sim_data}}}
 
-\item{n.sample}{subsample sizes}
+\item{n.max}{maximum subsample size}
 
-\item{N}{number of subsamples of each size}
+\item{N}{number of subsamples}
 }
 \value{
-list of length \code{N} with lists of
-subsampled data frames for each value of \code{n.sample}
+list of length \code{N} with objects of
+class \code{\link{sim_data}}, each with \code{n.max} rows
 }
 \description{
 Take subsamples from data.frame

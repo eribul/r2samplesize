@@ -3,6 +3,7 @@
 #'
 #' @param ss object as output from \code{\link{subsamples}}
 #' @param method argument passed to \code{\link{caret_step}}
+#' @param n.sample sample sizes to calculate the metrics for
 #' @param N number of subamples of each size. This alternative
 #' can be used to reuse a subsamlpe object with larger N set by
 #' \code{\link{subsamples}} instead of generating multiple subsamples
@@ -12,12 +13,25 @@
 #' "Rsquared" and "RMSE where each has columns corresponding
 #' to sample sizes and rows corresponding to repeated samples.
 #' @export
-metrics <- function(ss, method = "none", N = length(ss)) {
+metrics <- function(ss, method = "none", n.sample = seq(50, 500, 50), N = length(ss)) {
   stopifnot(inherits(ss, "subsamples"),
-            N <= length(ss))
+            N <= length(ss),
+            all(n.sample <= attr(ss, "n.max"))
+            )
+
+  # Capture some attributes before ss is subsetted
+  real_Rsquared <- attr(ss, "real_Rsquared")
+  real_RMSE     <- attr(ss, "real_RMSE")
   ss <- ss[seq_len(N)]
+
   metrics  <- function(df) caret_step(df, control_method = method)
-  m <- lapply(ss, function(Ni) lapply(Ni, metrics))
+  # For each subsamlpe in ss ...
+  m <- lapply(ss, function(Ni)
+    # ... and each subsample size according to n.sample ...
+    lapply(n.sample, function(n)
+      # ... we calculate the metrics
+      metrics(head(Ni, n))))
+
   m <- lapply(m, function(Ni) t(as.data.frame(Ni)))
   m <- lapply(m, function(Ni) {rownames(Ni) <- NULL; Ni})
   extract_metric <- function(column) {
@@ -27,9 +41,12 @@ metrics <- function(ss, method = "none", N = length(ss)) {
     x
   }
   x <- list(Rsquared = extract_metric(1), RMSE = extract_metric(2))
-  structure(x,  n.sample = attr(ss, "n.sample"),  N = N,
-            real_Rsquared = attr(ss, "real_Rsquared"), real_RMSE = attr(ss, "real_RMSE"),
-            class = c("metrics", "list"))
+  structure(x,
+            n.sample      = n.sample,
+            N             = N,
+            real_Rsquared = real_Rsquared,
+            real_RMSE     = real_RMSE,
+            class         = c("metrics", "list"))
 }
 
 

@@ -4,12 +4,14 @@
 \alias{metrics}
 \title{Compute R2 and RSME for subsamples of data}
 \usage{
-metrics(ss, method = "none", N = length(ss))
+metrics(ss, method = "none", n.sample = seq(50, 500, 50), N = length(ss))
 }
 \arguments{
 \item{ss}{object as output from \code{\link{subsamples}}}
 
 \item{method}{argument passed to \code{\link{caret_step}}}
+
+\item{n.sample}{sample sizes to calculate the metrics for}
 
 \item{N}{number of subamples of each size. This alternative
 can be used to reuse a subsamlpe object with larger N set by
