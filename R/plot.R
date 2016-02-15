@@ -10,10 +10,19 @@
 #' @export
 plot.metrics <- function(x, ...) {
   bp <- function(names_x, ref, ...) {
-    boxplot(x[[names_x]], xlab = "sample size", ylab = names_x, ...)
+    boxplot(x[[names_x]],
+            xlab  = "sample size",
+            ylab  = names_x,
+            names = attr(x, "n.sample"),
+            ...)
     abline(h = ref, col = "darkblue", lty = 2)
   }
-  invisible(mapply(bp, names(x), c(attr(x, "real_Rsquared"),
-    attr(x, "real_RMSE")), MoreArgs = list(...)))
+
+  invisible(
+    # For both R2 and RMSE
+    mapply(bp, names(x),
+           c(attr(x, "real_Rsquared"), attr(x, "real_RMSE")),
+           MoreArgs = list(...))
+    )
 }
 

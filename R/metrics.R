@@ -36,7 +36,7 @@ metrics <- function(ss, method = "none", n.sample = seq(50, 500, 50), N = length
   m <- lapply(m, function(Ni) {rownames(Ni) <- NULL; Ni})
   extract_metric <- function(column) {
     x <- t(as.data.frame(lapply(m, function(x) x[, column])))
-    colnames(x) <- attr(ss, "n.sample")
+    colnames(x) <- n.sample
     rownames(x) <- seq_len(N)
     x
   }
