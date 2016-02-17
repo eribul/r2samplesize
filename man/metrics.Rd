@@ -9,7 +9,7 @@ metrics(ss, method = "none", n.sample = seq(50, 500, 50), N = length(ss))
 \arguments{
 \item{ss}{object as output from \code{\link{subsamples}}}
 
-\item{method}{argument passed to \code{\link{caret_step}}}
+\item{method}{argument passed to \code{\link{model_step}}}
 
 \item{n.sample}{sample sizes to calculate the metrics for}
 

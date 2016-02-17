@@ -2,8 +2,8 @@
 
 S3method(plot,metrics)
 export(adj.r2)
-export(caret_step)
 export(metrics)
+export(model_step)
 export(sim_data)
 export(subsamples)
 export(unadj.r2)
