@@ -19,7 +19,7 @@ plot.metrics <- function(x, ...) {
   }
 
   invisible(
-    # For both R2 and RMSE
+    # For both R2 and RMSE (or wathever metrics we have).
     mapply(bp, names(x),
            c(attr(x, "real_Rsquared"), attr(x, "real_RMSE")),
            MoreArgs = list(...))
