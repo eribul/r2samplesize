@@ -8,12 +8,14 @@
 #' from the "log4r" package
 #' @return Nothing. The function is called for its side effects.
 lg <- function(..., fun = log4r::info) {
-  if (getOption("samplemetric.log", FALSE)) {
+  if (getOption("samplemetric.log", FALSE) &&
+      suppressWarnings(require("log4r", quietly = TRUE, warn.conflicts = FALSE))) {
     if (!exists(".logger")) .logger <<- log4r::create.logger(logfile = 'sample_metric.log', level = "INFO")
     if (length(list(...))) fun(.logger, paste(...)) else
       fun(.logger, paste("Calling:", deparse(match.call(call = sys.call(sys.parent(2))))))
   }
 }
+
 
 
 #' Convert between adjusted and non adjusted R2
