@@ -1,39 +1,3 @@
-#' Mean and variance of coefficient of determination
-#'
-#' The distribution of $R^2$ (as an estimate of $\rho^2$, the multiple correlation
-#' coefficient in a linear regression model) has been shown to have a
-#' quite compicated formula whereas at least its mean and variance can be estimated
-#' using a hypergeometric function.
-#'
-#' @param rho2 value of $\rho^2$ in population
-#' @param n sample size
-#' @param p number of independent variables used for
-#' estimate of multiple correlation
-#'
-#' @return Mean/variance of the approximated $R^2$ distribution as given in reference.
-#' @export
-#' @name mean_r2
-#' @seealso Algorithms based on (i) and (ii) in:
-#' Croux, C., & Dehon, C. (2003). Estimators of the multiple correlation coefficient:
-#' Local robustness and confidence intervals. Statistical Papers, 44(3), 315-334.
-#'
-#' @examples
-mean_r2 <- function(rho2, n, p) {
-  1 - ((n - p) / (n - 1)) * (1 - rho2) * Re(hypergeo::hypergeo(1, 2, .5 * (n + 1), rho2))
-}
-
-#' @rdname mean_r2
-#' @export
-var_r2 <- function(rho2, n, p) {
-  (
-    (((n - p) * (n - p + 2)) / ((n - 1) * (n + 1))) *
-      (1 - rho2) *
-      Re(hypergeo::hypergeo(2, 2, .5 * (n + 3), rho2))
-  ) - (1 - mean_r2(rho2, n, p)) ^ 2
-}
-
-
-
 #' Adjusted $R^2$
 #'
 #' Adjusted versions of $R^2$ (as an estimate of $\rho^2$, the multiple correlation
@@ -58,14 +22,20 @@ var_r2 <- function(rho2, n, p) {
 #' @param p number of independent variables used for
 #' estimate of multiple correlation
 #' @param adj name of correction formulas as character vector (see section "Correction formulas)
+#' @param min0 should negative adjusted values be truncated to 0 as suggested by Shieh 2008?
 #'
 #' @return named vector with adjusted $R^2$
 #' @export
 #'
+#' @seealso
+#' Shieh, G. (2008). Improved shrinkage estimation of squared multiple correlation
+#' coefficient and squared cross-validity coefficient. Organizational Research Methods.
+#'
 #' @examples
 adjusted_r2 <- function(r2, n, p, adj = c("smith", "ezekiel", "wherry",
                                           "olkin_pratt", "olkin_pratt1",
-                                          "olkin_pratt2", "pratt", "claudy")) {
+                                          "olkin_pratt2", "pratt", "claudy"),
+                        min0 = FALSE) {
 
   smith        <- function() 1 - (n       / (n - p))     * (1 - r2)
   ezekiel      <- function() 1 - ((n - 1) / (n - p - 1)) * (1 - r2)
@@ -84,7 +54,7 @@ adjusted_r2 <- function(r2, n, p, adj = c("smith", "ezekiel", "wherry",
 
   x <- vapply(adj, do.call, numeric(1), list(), envir = environment())
   names(x) <- adj
-  x
+  if (min0) pmax(0, x) else x
 }
 
 
